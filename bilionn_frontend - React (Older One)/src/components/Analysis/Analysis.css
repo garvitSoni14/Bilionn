@@ -1,0 +1,94 @@
+/* Container */
+.analysis-container {
+  margin-top: 20px;
+  padding: 0 20px;
+  color: #f5f5f5;
+}
+
+/* Header */
+.analysis-header {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 25px;
+  color: #20c997;
+  text-align: center;
+  letter-spacing: 1px;
+}
+
+/* Grid Layout */
+.analysis-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  grid-template-areas:
+    "date payment"
+    "products status"
+    "monthly monthly";
+  gap: 20px;
+}
+
+/* Base card */
+.analysis-card {
+  background: #1f2329;
+  border-radius: 12px;
+  padding: 18px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #2e343d; /* subtle border instead of shadow */
+}
+
+/* Make charts always expand */
+.analysis-card > * {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Individual card styles */
+.sales-date-card {
+  grid-area: date;
+  min-height: 340px;
+  background: #24282f; /* darker highlight */
+}
+
+.payment-card {
+  grid-area: payment;
+  min-height: 350px;
+  background: #20252b;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.payment-card canvas {
+  width: 100% !important;
+  height: 100% !important; /* ✅ take full box height */
+}
+.products-card {
+  grid-area: products;
+  min-height: 300px;
+  background: #262b33;
+}
+
+.status-card {
+  grid-area: status;
+  min-height: 220px;
+  background: #20252b;
+}
+
+.monthly-card {
+  grid-area: monthly;
+  min-height: 380px;
+  background: #24282f;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .analysis-grid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "date"
+      "payment"
+      "products"
+      "status"
+      "monthly";
+  }
+}

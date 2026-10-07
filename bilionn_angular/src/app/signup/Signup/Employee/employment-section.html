@@ -1,0 +1,19 @@
+<h3 class="section-title">Employment</h3>
+
+    <div class="field-grid">
+      <mat-form-field appearance="outline" floatLabel="always">
+        <mat-label>Joining date</mat-label>
+        <input matInput type="date" [formField]="form().joiningDate" />
+        @if (form().joiningDate().invalid()) {
+          <mat-error>{{ form().joiningDate().errors()[0].message }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Salary (₹)</mat-label>
+        <input matInput type="text" inputmode="decimal" [formField]="form().salary" placeholder="35000" />
+        @if (form().salary().invalid()) {
+          <mat-error>{{ form().salary().errors()[0].message }}</mat-error>
+        }
+      </mat-form-field>
+    </div>

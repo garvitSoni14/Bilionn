@@ -1,0 +1,27 @@
+<h3 class="section-title">Account</h3>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Email address</mat-label>
+      <input matInput type="email" [formField]="form().email" placeholder="you@example.com" autocomplete="email" />
+      @if (form().email().invalid()) {
+        <mat-error>{{ form().email().errors()[0].message }}</mat-error>
+      }
+    </mat-form-field>
+
+    <div class="field-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>Password</mat-label>
+        <input matInput type="password" [formField]="form().password" autocomplete="new-password" />
+        @if (form().password().invalid()) {
+          <mat-error>{{ form().password().errors()[0].message }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Confirm password</mat-label>
+        <input matInput type="password" [formField]="form().confirmPassword" autocomplete="new-password" />
+        @if (form().confirmPassword().invalid()) {
+          <mat-error>{{ form().confirmPassword().errors()[0].message }}</mat-error>
+        }
+      </mat-form-field>
+    </div>
