@@ -1,6 +1,6 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable,inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable, tap, firstValueFrom } from 'rxjs';
 
 export interface LoginResponse {
   email: string;
@@ -9,6 +9,7 @@ export interface LoginResponse {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+
   private readonly apiUrl = 'http://localhost:8080/api/v1.0';
   private readonly userStorageKey = 'bilionn.user';
   readonly currentUser = signal<LoginResponse | null>(this.restoreUser());
@@ -41,4 +42,18 @@ export class AuthService {
       return null;
     }
   }
+
+  // This is the restoreSession method from session strg 
+  async restoreSession(): Promise<void> {
+  try {
+    const user = await firstValueFrom(
+      this.http.get<LoginResponse>(`${this.apiUrl}/me`, { withCredentials: true }),
+    );
+    this.currentUser.set(user);
+    sessionStorage.setItem(this.userStorageKey, JSON.stringify(user));
+  } catch {
+    this.currentUser.set(null);
+    sessionStorage.removeItem(this.userStorageKey);
+  }
+}
 }

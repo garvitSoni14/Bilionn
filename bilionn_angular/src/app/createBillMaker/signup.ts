@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, signal, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal, inject, HostListener } from '@angular/core';
 import { form, submit } from '@angular/forms/signals';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { RouterLink } from '@angular/router';
@@ -12,7 +12,7 @@ import { BankSection } from './Signup/sections/Bank/bank-section';
 import { EmergencySection } from './Signup/sections/Emergency/emergency-section';
 import { AccountSection } from './Signup/sections/Account/account-section';
 import { createSignupFormData, SignupFormData, validateSignup } from './signup.model';
-import { ValidationMessage } from './Signup/shared/validation/validation-message';
+import { CashierService } from './cashier.service';
 
 @Component({
   selector: 'app-signup',
@@ -25,11 +25,9 @@ import { ValidationMessage } from './Signup/shared/validation/validation-message
     EmergencySection,
     AccountSection,
     RouterLink,
-    ValidationMessage    //Common validation message component
-
   ],
   templateUrl: './signup.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  // changeDetection: ChangeDetectionStrategy.Eager,    using default strategy...(default  = Eager)
   styleUrl: './signup.css',
 })
 export class CreateBillMaker {
@@ -37,7 +35,8 @@ export class CreateBillMaker {
   readonly successMessage = signal('');
   readonly errorMessage = signal('');
   readonly adminLoginRequired = signal(false);
-  private readonly http = inject(HttpClient);
+  // private readonly http = inject(HttpClient);
+  private readonly cashierService = inject(CashierService);
 
   readonly model = signal<SignupFormData>(createSignupFormData());
   readonly signupForm = form(this.model, (path) => validateSignup(path));
@@ -74,13 +73,14 @@ export class CreateBillMaker {
       this.loading.set(true);
 
       try {
-        await firstValueFrom(
-          this.http.post(
-            'http://localhost:8080/api/v1.0/admin/cashiers',
-            payload,
-          { withCredentials: true },
-        )
-      );
+      //   await firstValueFrom(
+      //     this.http.post(
+      //       'http://localhost:8080/api/v1.0/admin/cashiers',
+      //       payload,
+      //     { withCredentials: true },
+      //   )
+      // );
+      await firstValueFrom(this.cashierService.createCashier(payload));
 
       // SUCCESS: on success show this message...
         this.successMessage.set('Cashier account created successfully.');        
@@ -111,6 +111,16 @@ export class CreateBillMaker {
       }
       return null;
     });
+  }
+  hasUnsavedChanges(): boolean {
+    return this.signupForm().dirty() && !this.loading();
+  }
+  // Covers refresh / tab close / typed URL
+  @HostListener('window:beforeunload', ['$event'])
+  onBeforeUnload(event: BeforeUnloadEvent): void {
+    if (this.hasUnsavedChanges()) {
+      event.preventDefault();
+    }
   }
 }
 
