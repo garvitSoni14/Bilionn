@@ -17,7 +17,13 @@ export class AuthService {
   constructor(private readonly http: HttpClient) {}
 
   login(credentials: { email: string; password: string }): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, credentials, { withCredentials: true }).pipe(
+    // return this.http.post<LoginResponse>(`${this.apiUrl}/login`, credentials, { withCredentials: true }).pipe(
+    //   tap((user) => {
+    //     this.currentUser.set(user);
+    //     sessionStorage.setItem(this.userStorageKey, JSON.stringify(user));
+    //   }),
+    // );
+    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, credentials).pipe(
       tap((user) => {
         this.currentUser.set(user);
         sessionStorage.setItem(this.userStorageKey, JSON.stringify(user));
@@ -26,7 +32,13 @@ export class AuthService {
   }
 
   logout(): Observable<void> {
-    return this.http.post<void>(`${this.apiUrl}/logout`, {}, { withCredentials: true }).pipe(
+    // return this.http.post<void>(`${this.apiUrl}/logout`, {}, { withCredentials: true }).pipe(
+    //   tap(() => {
+    //     this.currentUser.set(null);
+    //     sessionStorage.removeItem(this.userStorageKey);
+    //   }),
+    // );
+    return this.http.post<void>(`${this.apiUrl}/logout`, {}).pipe(
       tap(() => {
         this.currentUser.set(null);
         sessionStorage.removeItem(this.userStorageKey);
@@ -46,8 +58,11 @@ export class AuthService {
   // This is the restoreSession method from session strg 
   async restoreSession(): Promise<void> {
   try {
-    const user = await firstValueFrom(
-      this.http.get<LoginResponse>(`${this.apiUrl}/me`, { withCredentials: true }),
+    // const user = await firstValueFrom(
+    //   this.http.get<LoginResponse>(`${this.apiUrl}/me`, { withCredentials: true }),
+    // );
+     const user = await firstValueFrom(
+      this.http.get<LoginResponse>(`${this.apiUrl}/me`),
     );
     this.currentUser.set(user);
     sessionStorage.setItem(this.userStorageKey, JSON.stringify(user));

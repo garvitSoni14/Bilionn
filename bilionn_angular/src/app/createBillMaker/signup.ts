@@ -13,6 +13,7 @@ import { EmergencySection } from './Signup/sections/Emergency/emergency-section'
 import { AccountSection } from './Signup/sections/Account/account-section';
 import { createSignupFormData, SignupFormData, validateSignup } from './signup.model';
 import { CashierService } from './cashier.service';
+import { LoadingService } from '../interceptors/loading-interceptor/loadin.service';
 
 @Component({
   selector: 'app-signup',
@@ -31,17 +32,25 @@ import { CashierService } from './cashier.service';
   styleUrl: './signup.css',
 })
 export class CreateBillMaker {
-  readonly loading = signal(false);
+  // readonly loading = signal(false);
+
+  private readonly cashierService = inject(CashierService);
+  private readonly loadingService = inject(LoadingService);
+  readonly loading = this.loadingService.isLoading;
+
   readonly successMessage = signal('');
   readonly errorMessage = signal('');
   readonly adminLoginRequired = signal(false);
+        // removed because we dont neet it since we are using loading interceptor
+
   // private readonly http = inject(HttpClient);
-  private readonly cashierService = inject(CashierService);
 
   readonly model = signal<SignupFormData>(createSignupFormData());
   readonly signupForm = form(this.model, (path) => validateSignup(path));
 
 // This signal will set the formSubmitted as true after successfull registration..
+      // removed because we dont neet it since we are using loading interceptor
+
   // readonly formSubmittedSuccessfully = signal(false);
 
   async onSubmit(event: SubmitEvent): Promise<void> {
@@ -70,7 +79,9 @@ export class CreateBillMaker {
         password: formData.account.password,
       };
 
-      this.loading.set(true);
+            // removed because we dont neet it since we are using loading interceptor
+
+      // this.loading.set(true); // loading interceptor + Auth inter...
 
       try {
       //   await firstValueFrom(
@@ -106,9 +117,11 @@ export class CreateBillMaker {
             ? 'Could not reach the server. Check that the backend is running and try again.'
             : 'We could not create the cashier. Check the details and try again.'));
         }
-      } finally {
-        this.loading.set(false);
       }
+      // removed because we dont neet it since we are using loading interceptor
+      // } finally {
+      //   this.loading.set(false);
+      // }
       return null;
     });
   }

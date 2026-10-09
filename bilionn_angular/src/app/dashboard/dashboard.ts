@@ -2,7 +2,7 @@ import { Component, computed, inject, signal, ChangeDetectionStrategy } from '@a
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { forkJoin } from 'rxjs';
 import { Router, RouterLink } from '@angular/router';
-import { AuthService } from '../auth.service';
+import { AuthService } from '../interceptors/auth-interceptor/auth.service';
 
 interface OrderItem {
   itemId: string;
@@ -134,8 +134,12 @@ export class Dashboard {
     this.loading.set(true);
     this.errorMessage.set('');
     forkJoin({
-      summary: this.http.get<DashboardSummary>(`${this.apiUrl}/dashboard`, { withCredentials: true }),
-      orders: this.http.get<Order[]>(`${this.apiUrl}/orders/latest`, { withCredentials: true }),
+      // summary: this.http.get<DashboardSummary>(`${this.apiUrl}/dashboard`, { withCredentials: true }),
+            summary: this.http.get<DashboardSummary>(`${this.apiUrl}/dashboard`),
+
+      // orders: this.http.get<Order[]>(`${this.apiUrl}/orders/latest`, { withCredentials: true }),
+            orders: this.http.get<Order[]>(`${this.apiUrl}/orders/latest`),
+
     }).subscribe({
       next: ({ summary, orders }) => {
         this.summary.set(summary);

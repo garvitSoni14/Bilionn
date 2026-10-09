@@ -2,7 +2,8 @@ import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/cor
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { AuthService } from '../auth.service';
+import { AuthService } from '../interceptors/auth-interceptor/auth.service';
+import { LoadingService } from '../interceptors/loading-interceptor/loadin.service';
 
 @Component({
   selector: 'app-login',
@@ -16,7 +17,8 @@ export class Login {
   private readonly formBuilder = inject(FormBuilder);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
-  readonly loading = signal(false);
+  // readonly loading = signal(false);
+  readonly loading =inject(LoadingService).isLoading;
   readonly errorMessage = signal('');
   readonly form = this.formBuilder.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
@@ -28,10 +30,10 @@ export class Login {
     this.form.markAllAsTouched();
     if (this.form.invalid) return;
 
-    this.loading.set(true);
+    // this.loading.set(true);
     this.authService.login(this.form.getRawValue()).subscribe({
       next: () => {
-        this.loading.set(false);
+        // this.loading.set(false);
         void this.router.navigateByUrl('/dashboard');
       },
       error: (error: HttpErrorResponse) => {
@@ -40,7 +42,7 @@ export class Login {
           : error.status === 401 || error.status === 400
             ? 'Email or password is incorrect.'
             : 'We could not sign you in. Please try again.');
-        this.loading.set(false);
+        // this.loading.set(false);
       },
     });
   }
