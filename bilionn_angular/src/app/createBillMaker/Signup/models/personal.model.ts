@@ -45,6 +45,8 @@ export function validatePersonal(path: SchemaPathTree<PersonalData>): void {
     return null;
   });
 
+  
+
   required(path.mobileNumber, { message: 'Mobile number is required.' });
   pattern(path.mobileNumber, /^[6-9]\d{9}$/, {
     message: 'Enter a valid 10-digit mobile number.',

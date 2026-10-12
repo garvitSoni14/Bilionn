@@ -28,7 +28,7 @@ import { LoadingService } from '../interceptors/loading-interceptor/loadin.servi
     RouterLink,
   ],
   templateUrl: './signup.html',
-  // changeDetection: ChangeDetectionStrategy.Eager,    using default strategy...(default  = Eager)
+  // changeDetection: ChangeDetectionStrategy.Eager,    using default:  OnPush
   styleUrl: './signup.css',
 })
 export class CreateBillMaker {

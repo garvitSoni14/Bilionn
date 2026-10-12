@@ -1,13 +1,13 @@
 import { Routes } from '@angular/router';
 import { loginRoutes } from './login/login.route';
-import { adminRoutes } from './createBillMaker/signup.route';
+import { adminRoutes } from './createBillMaker/admin.route';
 import { dashboardRoutes } from './dashboard/dashboard.route';
-
 
 export const routes: Routes = [
   ...loginRoutes,
   ...adminRoutes,
   ...dashboardRoutes,  
+
   { path: '', pathMatch: 'full', redirectTo: 'login' },
   { path: '**', redirectTo: 'login' }
 ];

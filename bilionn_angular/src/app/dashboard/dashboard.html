@@ -4,9 +4,13 @@
     <div class="store-switcher"><span class="store-avatar">B</span><span class="store-copy"><strong>Bilionn Market</strong><small>Retail workspace</small></span><span class="switcher-dots">•••</span></div>
     <div class="nav-caption">WORKSPACE</div>
     <nav class="side-nav" aria-label="Main navigation">
-      <a class="nav-link active" routerLink="/dashboard"><span class="nav-icon">◫</span>Overview<span class="nav-indicator"></span></a>
-      @if (isAdmin()) { <a class="nav-link" routerLink="/admin/users/new"><span class="nav-icon">♙</span>Team accounts<span class="nav-arrow">↗</span></a> }
-    </nav>
+  <a class="nav-link active" routerLink="/dashboard"><span class="nav-icon">◫</span>Overview<span class="nav-indicator"></span></a>
+  @if (isAdmin()) {
+    <a class="nav-link" routerLink="/admin/categories"><span class="nav-icon">▦</span>Categories<span class="nav-arrow">↗</span></a>
+    <a class="nav-link" routerLink="/admin/items"><span class="nav-icon">▤</span>Items<span class="nav-arrow">↗</span></a>
+    <a class="nav-link" routerLink="/admin/users/new"><span class="nav-icon">♙</span>Team accounts<span class="nav-arrow">↗</span></a>
+  }
+</nav>
     <div class="sidebar-bottom">
       <div class="help-card"><span class="help-spark">✳</span><strong>Need a hand?</strong><p>Your store overview is always just a click away.</p></div>
       <button class="signout-link" type="button" (click)="signOut()"><span class="nav-icon">↪</span>Sign out</button>
