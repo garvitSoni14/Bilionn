@@ -14,7 +14,7 @@
     <div class="sidebar-bottom">
       <div class="help-card"><span class="help-spark">✳</span><strong>Need a hand?</strong><p>Organise categories first, then add the items that live in them.</p></div>
       <button class="signout-link" type="button" (click)="signOut()"><span class="nav-icon">↪</span>Sign out</button>
-      <div class="sidebar-user"><span class="user-avatar">{{ (auth.currentUser()?.email || 'S').charAt(0).toUpperCase() }}</span><span class="user-copy"><strong>{{ auth.currentUser()?.email || 'Store team' }}</strong><small>{{ isAdmin() ? 'Administrator' : 'Bill maker' }}</small></span><span class="user-menu">•••</span></div>
+      <div class="sidebar-user"><span class="user-avatar">{{ (auth.currentUser()?.name  || 'S').charAt(0).toUpperCase() }}</span><span class="user-copy"><strong>{{ auth.currentUser()?.name  || 'Store team' }}</strong><small>{{ isAdmin() ? 'Administrator' : 'Bill maker' }}</small></span><span class="user-menu">•••</span></div>
     </div>
   </aside>
 

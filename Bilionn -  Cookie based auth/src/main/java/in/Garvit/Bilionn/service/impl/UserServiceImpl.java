@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -46,6 +47,12 @@ public class UserServiceImpl implements UserService {
         return convertToResponse(userRepository.save(admin));
     }
 
+    @Override
+    public UserEntity getByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
+    }
+
     private UserResponse convertToResponse(UserEntity newUser){
         return UserResponse.builder()
                 .name(newUser.getName())
@@ -71,5 +78,7 @@ public class UserServiceImpl implements UserService {
                 .map(user -> convertToResponse(user))
                 .collect(Collectors.toList());
     }
+
+
 
 }

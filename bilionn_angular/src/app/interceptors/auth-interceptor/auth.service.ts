@@ -1,74 +1,107 @@
-import { Injectable,inject, signal } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap, firstValueFrom } from 'rxjs';
+import { jwtDecode } from 'jwt-decode';
+import { JwtClaims } from '../../../../public/JwtClaims';
 
-export interface LoginResponse {
-  email: string;
-  role: string;
-}
+
+// export interface LoginResponse {
+//   email: string;
+//   role: string;
+// }
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
 
   private readonly apiUrl = 'http://localhost:8080/api/v1.0';
-  private readonly userStorageKey = 'bilionn.user';
-  readonly currentUser = signal<LoginResponse | null>(this.restoreUser());
+  // private readonly userStorageKey = 'bilionn.user';
+    private readonly tokenCookieName = 'jwt'; 
+  // readonly currentUser = signal<LoginResponse | null>(this.restoreUser());
+  readonly currentUser = signal<JwtClaims | null>(this.readClaims());
 
   constructor(private readonly http: HttpClient) {}
 
-  login(credentials: { email: string; password: string }): Observable<LoginResponse> {
-    // return this.http.post<LoginResponse>(`${this.apiUrl}/login`, credentials, { withCredentials: true }).pipe(
-    //   tap((user) => {
-    //     this.currentUser.set(user);
-    //     sessionStorage.setItem(this.userStorageKey, JSON.stringify(user));
-    //   }),
-    // );
-    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, credentials).pipe(
-      tap((user) => {
-        this.currentUser.set(user);
-        sessionStorage.setItem(this.userStorageKey, JSON.stringify(user));
-      }),
-    );
+  // login(credentials: { email: string; password: string }): Observable<string> {
+  
+  login(credentials: { email: string; password: string }): Observable<string> {
+    return this.http
+      .post(`${this.apiUrl}/login`, credentials, { responseType: 'text', withCredentials: true })
+      .pipe(tap(() => this.currentUser.set(this.readClaims())));
   }
+
+  //   return this.http.post<LoginResponse>(`${this.apiUrl}/login`, credentials).pipe(
+  //     tap((user) => {
+  //       this.currentUser.set(user);
+  //       sessionStorage.setItem(this.userStorageKey, JSON.stringify(user));
+  //     }),
+  //   );
+  // }
 
   logout(): Observable<void> {
-    // return this.http.post<void>(`${this.apiUrl}/logout`, {}, { withCredentials: true }).pipe(
-    //   tap(() => {
-    //     this.currentUser.set(null);
-    //     sessionStorage.removeItem(this.userStorageKey);
-    //   }),
-    // );
-    return this.http.post<void>(`${this.apiUrl}/logout`, {}).pipe(
-      tap(() => {
-        this.currentUser.set(null);
-        sessionStorage.removeItem(this.userStorageKey);
-      }),
-    );
+    return this.http
+      .post<void>(`${this.apiUrl}/logout`, {}, { withCredentials: true })
+      .pipe(tap(() => this.currentUser.set(null)));
   }
 
-  private restoreUser(): LoginResponse | null {
+  // logout(): Observable<void> {
+    
+  //   return this.http.post<void>(`${this.apiUrl}/logout`, {}).pipe(
+  //     tap(() => {
+  //       this.currentUser.set(null);
+  //       sessionStorage.removeItem(this.userStorageKey);
+  //     }),
+  //   );
+  // }
+
+ 
+
+  // This is the restoreSession method from session strg 
+  // async restoreSession(): Promise<void> {
+  // try {
+  //   // const user = await firstValueFrom(
+  //   //   this.http.get<LoginResponse>(`${this.apiUrl}/me`, { withCredentials: true }),
+  //   // );
+  //    const user = await firstValueFrom(
+  //     this.http.get<LoginResponse>(`${this.apiUrl}/me`),
+  //   );
+  //   this.currentUser.set(user);
+  //   sessionStorage.setItem(this.userStorageKey, JSON.stringify(user));
+  // } catch {
+  //   this.currentUser.set(null);
+  //   sessionStorage.removeItem(this.userStorageKey);
+  // }
+// }
+
+// Kept with the same name so my existing APP_INITIALIZER does not break.
+  // It now just re-reads the cookie, with no HTTP call.
+async restoreSession(): Promise<void> {
+    this.currentUser.set(this.readClaims());
+  }
+
+  isLoggedIn(): boolean {
+    const c = this.currentUser();
+    return !!c && c.exp * 1000 > Date.now();
+  }
+
+  hasRole(...roles: string[]): boolean {
+    const c = this.currentUser();
+    return this.isLoggedIn() && !!c && roles.includes(c.role);
+  }
+
+  private readClaims(): JwtClaims | null {
+    const token = this.getCookie(this.tokenCookieName);
+    if (!token) return null;
     try {
-      const storedUser = sessionStorage.getItem(this.userStorageKey);
-      return storedUser ? JSON.parse(storedUser) as LoginResponse : null;
+      const claims = jwtDecode<JwtClaims>(token);
+      return claims.exp * 1000 > Date.now() ? claims : null;
     } catch {
       return null;
     }
   }
 
-  // This is the restoreSession method from session strg 
-  async restoreSession(): Promise<void> {
-  try {
-    // const user = await firstValueFrom(
-    //   this.http.get<LoginResponse>(`${this.apiUrl}/me`, { withCredentials: true }),
-    // );
-     const user = await firstValueFrom(
-      this.http.get<LoginResponse>(`${this.apiUrl}/me`),
-    );
-    this.currentUser.set(user);
-    sessionStorage.setItem(this.userStorageKey, JSON.stringify(user));
-  } catch {
-    this.currentUser.set(null);
-    sessionStorage.removeItem(this.userStorageKey);
+  private getCookie(name: string): string | null {
+    const match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+    return match ? decodeURIComponent(match[1]) : null;
   }
-}
+  
 }

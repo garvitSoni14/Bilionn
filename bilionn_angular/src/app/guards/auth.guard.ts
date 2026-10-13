@@ -5,5 +5,5 @@ import { AuthService } from '../interceptors/auth-interceptor/auth.service';
 export const authGuard: CanActivateFn = () => {
   const auth = inject(AuthService);
   const router = inject(Router);
-  return auth.currentUser() ? true : router.createUrlTree(['/login']);
+  return auth.isLoggedIn() ? true : router.createUrlTree(['/login']);
 };

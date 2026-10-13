@@ -1,5 +1,6 @@
 package in.Garvit.Bilionn.controller;
 
+import in.Garvit.Bilionn.entity.UserEntity;
 import in.Garvit.Bilionn.io.AuthRequest;
 import in.Garvit.Bilionn.io.AuthResponse;
 import in.Garvit.Bilionn.service.UserService;
@@ -43,15 +44,17 @@ public class AuthController {
     private final UserService userService;
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) throws Exception{
+    public ResponseEntity<String> login(@RequestBody AuthRequest request) throws Exception {
         authenticate(request.getEmail(), request.getPassword());
-        final UserDetails userDetails = appUserDetailsService.loadUserByUsername(request.getEmail());
-        final String jwtToken = jwtUtil.generateToken(userDetails);
-       String role = userService.getUserRole(request.getEmail());
-        ResponseCookie cookie = jwtCookie(jwtToken, JWT_COOKIE_MAX_AGE_SECONDS);
+        UserDetails userDetails = appUserDetailsService.loadUserByUsername(request.getEmail());
+
+        UserEntity user = userService.getByEmail(request.getEmail()); // adjust to your service
+        String jwt = jwtUtil.generateToken(userDetails, user.getId(), user.getName(), String.valueOf(user.getRole()));
+
+        ResponseCookie cookie = jwtCookie(jwt, JWT_COOKIE_MAX_AGE_SECONDS);
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body(new AuthResponse(request.getEmail(), role));
+                .body("Success");
     }
 
     @PostMapping("/logout")
@@ -64,7 +67,7 @@ public class AuthController {
 
     private ResponseCookie jwtCookie(String value, long maxAgeSeconds) {
         return ResponseCookie.from(JWT_COOKIE_NAME, value)
-                .httpOnly(true)
+                .httpOnly(false)
                 .secure(jwtCookieSecure)
                 .path("/")
                 .sameSite("Lax")

@@ -7,7 +7,8 @@ import { AuthService } from '../interceptors/auth-interceptor/auth.service';
 export const adminGuard: CanActivateChildFn = () => {
   const auth = inject(AuthService);
   const router = inject(Router);
-  return auth.currentUser()?.role === 'ADMIN' ? true : router.createUrlTree(['/login']);
+  if (auth.hasRole('ADMIN')) return true;
+  return router.createUrlTree([auth.isLoggedIn() ? '/dashboard' : '/login']);
 };
 
 // whEN it was a canactivate guard .. and we have to apply it on every child guard manually
