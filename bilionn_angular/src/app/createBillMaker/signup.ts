@@ -41,8 +41,8 @@ export class CreateBillMaker {
   readonly successMessage = signal('');
   readonly errorMessage = signal('');
   readonly adminLoginRequired = signal(false);
-        // removed because we dont neet it since we are using loading interceptor
 
+  // removed because we dont need it since we are using loading interceptor
   // private readonly http = inject(HttpClient);
 
   readonly model = signal<SignupFormData>(createSignupFormData());

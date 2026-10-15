@@ -1,6 +1,6 @@
 package in.Garvit.Bilionn.Config;
 
-import in.Garvit.Bilionn.filter.JwtRequestFilter;
+import in.Garvit.Bilionn.filter.AuthCookieFilter;
 import in.Garvit.Bilionn.service.impl.AppUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -30,7 +30,7 @@ import java.util.List;
 public class SecurityConfig {
 
     private final AppUserDetailsService appUserDetailsService;
-    private final JwtRequestFilter jwtRequestFilter;
+    private final AuthCookieFilter jwtRequestFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{

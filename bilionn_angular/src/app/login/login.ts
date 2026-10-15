@@ -1,49 +1,65 @@
-import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  signal,
+  ViewEncapsulation,
+} from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../interceptors/auth-interceptor/auth.service';
 import { LoadingService } from '../interceptors/loading-interceptor/loadin.service';
+
+import { form, submit } from '@angular/forms/signals';
+import { createLoginData, LoginFormData, validateLogin } from './models/login.model';
+import { EmailSection } from './sections/email-section';
+import { PasswordSection } from './sections/password-section';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [EmailSection, PasswordSection, RouterLink],
   templateUrl: './login.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  // changeDetection: ChangeDetectionStrategy.Eager,
+  encapsulation: ViewEncapsulation.None,
   styleUrl: './login.css',
 })
 export class Login {
-  private readonly formBuilder = inject(FormBuilder);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
-  // readonly loading = signal(false);
-  readonly loading =inject(LoadingService).isLoading;
+  private readonly loadingService = inject(LoadingService);
+
+  readonly loading = this.loadingService.isLoading;
   readonly errorMessage = signal('');
-  readonly form = this.formBuilder.nonNullable.group({
-    email: ['', [Validators.required, Validators.email]],
-    password: ['', Validators.required],
-  });
 
-  submit(): void {
+  readonly model = signal<LoginFormData>(createLoginData());
+
+  readonly loginForm = form(this.model, (path) => validateLogin(path));
+
+  async onSubmit(event: SubmitEvent): Promise<void> {
+    event.preventDefault();
     this.errorMessage.set('');
-    this.form.markAllAsTouched();
-    if (this.form.invalid) return;
 
-    // this.loading.set(true);
-    this.authService.login(this.form.getRawValue()).subscribe({
-      next: () => {
-        // this.loading.set(false);
-        void this.router.navigateByUrl('/dashboard');
-      },
-      error: (error: HttpErrorResponse) => {
-        this.errorMessage.set(error.status === 0
-          ? 'Could not reach the server. Check that the backend is running and try again.'
-          : error.status === 401 || error.status === 400
-            ? 'Email or password is incorrect.'
-            : 'We could not sign you in. Please try again.');
-        // this.loading.set(false);
-      },
+    await submit(this.loginForm, async () => {
+      // Read the current form values from the model signal.
+      const credentials = this.model();
+
+      try {
+        await firstValueFrom(this.authService.login(credentials));
+
+        await this.router.navigateByUrl('/dashboard');
+      } catch (error) {
+        const httpError = error as HttpErrorResponse;
+
+        this.errorMessage.set(
+          httpError.status === 0
+            ? 'Could not reach the server. Check that the backend is running and try again.'
+            : httpError.status === 401 || httpError.status === 400
+              ? 'Email or password is incorrect.'
+              : 'We could not sign you in. Please try again.',
+        );
+      }
     });
   }
 }

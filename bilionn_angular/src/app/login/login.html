@@ -1,42 +1,69 @@
 <section class="login-shell">
   <div class="login-visual">
-    <a class="brand" routerLink="/login"><span class="brand-mark">b</span> bilionn</a>
+    <a class="brand" routerLink="/login">
+      <span class="brand-mark">b</span> bilionn
+    </a>
+
     <div class="visual-copy">
-      <span class="eyebrow"><span class="eyebrow-dot"></span> YOUR STORE, YOUR TEAM</span>
+      <span class="eyebrow">
+        <span class="eyebrow-dot"></span> YOUR STORE, YOUR TEAM
+      </span>
       <h1>Good to have<br />you <em>back.</em></h1>
-      <p>Sign in to pick up where you left off and keep your store moving.</p>
+      <p>
+        Sign in to pick up where you left off and keep your store moving.
+      </p>
     </div>
-    <div class="visual-bottom"><span>Fresh finds. Happy tables.</span><span>01 — 03</span></div>
+
+    <div class="visual-bottom">
+      <span>Fresh finds. Happy tables.</span>
+      <span>01 — 03</span>
+    </div>
   </div>
 
   <main class="login-panel">
     <div class="form-wrap">
-      <div class="mobile-brand"><span class="brand-mark">b</span> bilionn</div>
+      <div class="mobile-brand">
+        <span class="brand-mark">b</span> bilionn
+      </div>
+
       <div class="form-heading">
         <span class="eyebrow form-eyebrow">WELCOME BACK</span>
         <h2>Sign in<span>.</span></h2>
         <p>Enter the account details provided by your administrator.</p>
       </div>
-      @if (errorMessage()) { <div class="notice" role="alert"><span>!</span>{{ errorMessage() }}</div> }
-      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
-        <label for="email">Email address</label>
-        <div class="input-wrap" [class.invalid]="form.controls.email.touched && form.controls.email.invalid">
-          <span class="field-icon" aria-hidden="true">@</span>
-          <input id="email" type="email" formControlName="email" placeholder="you@example.com" autocomplete="username" />
+
+      @if (errorMessage()) {
+        <div class="notice" role="alert">
+          <span>!</span>
+          {{ errorMessage() }}
         </div>
-        @if (form.controls.email.touched && form.controls.email.hasError('required')) { <small class="field-error">Enter your email address.</small> }
-        @else if (form.controls.email.touched && form.controls.email.hasError('email')) { <small class="field-error">Enter a valid email address.</small> }
-        <label for="password">Password</label>
-        <div class="input-wrap" [class.invalid]="form.controls.password.touched && form.controls.password.invalid">
-          <span class="field-icon" aria-hidden="true">⌑</span>
-          <input id="password" type="password" formControlName="password" placeholder="Enter your password" autocomplete="current-password" />
-        </div>
-        @if (form.controls.password.touched && form.controls.password.hasError('required')) { <small class="field-error">Enter your password.</small> }
-        <button class="submit-button" type="submit" [disabled]="loading()"><span>{{ loading() ? 'Signing in…' : 'Sign in to Bilionn' }}</span><span class="button-arrow" aria-hidden="true">↗</span></button>
+      }
+
+      <form (submit)="onSubmit($event)" novalidate>
+        <app-email-section [field]="loginForm.email" />
+        <app-password-section [field]="loginForm.password" />
+
+        <button
+          class="submit-button"
+          type="submit"
+          [disabled]="loading()"
+        >
+          <span>
+            {{ loading() ? 'Signing in…' : 'Sign in to Bilionn' }}
+          </span>
+          <span class="button-arrow" aria-hidden="true">↗</span>
+        </button>
       </form>
-      <p class="help-note">Bill maker or administrator? Sign in with the credentials your administrator created for you.</p>
-      <div class="secure-note"><span aria-hidden="true">✳</span> Your session is protected with a secure cookie.</div>
+
+      <p class="help-note">
+        Bill maker or administrator? Sign in with the credentials your
+        administrator created for you.
+      </p>
+
+      <div class="secure-note">
+        <span aria-hidden="true">✳</span>
+        Your session is protected with a secure cookie.
+      </div>
     </div>
-  
   </main>
 </section>
